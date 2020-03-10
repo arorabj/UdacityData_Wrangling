@@ -24,10 +24,10 @@ def read_song_data(cur, conn, filepath):
         print (e)
 
     song_data = [df['song_id'].values,df['title'].values,df['artist_id'].values,df['year'].values,df['duration'].values]
-    #cur.execute(songs_insert,song_data)
+    cur.execute(songs_insert,song_data)
 
     artist_data = [df['artist_id'].values, df['name'].values, df['location'].values, df['latitude'].values,df['longitude'].values]
-    #cur.execute(artists_insert,song_data)
+    cur.execute(artists_insert,artist_data)
     conn.commit()
 
 def main():
@@ -50,8 +50,10 @@ def main():
     pd.set_option('display.max_columns', 10)
 
     # process_data(log_files_dir)
-    process_data(conn, cur, song_files_dir, read_song_data)
-
+    try:
+        process_data(cur, conn, song_files_dir, read_song_data)
+    except Exception as e:
+        print (e)
     cur.close()
     conn.close()
 
