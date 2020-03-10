@@ -73,3 +73,4 @@ for i in rows:
 
 session.shutdown()
 conn.shutdown()
+    
