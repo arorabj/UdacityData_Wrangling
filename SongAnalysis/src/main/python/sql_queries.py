@@ -15,7 +15,8 @@ level varchar,
 song_id varchar,
 artist_id varchar,
 session_id int,
-location varchar not null
+location varchar not null,
+user_agent text
 )"""
 
 users_create="""CREATE TABLE IF NOT EXISTS users(
