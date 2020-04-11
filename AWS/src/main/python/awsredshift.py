@@ -35,8 +35,21 @@ sampleBucketContent=s3.Bucket("awssampledbuswest2")
 for obj in sampleBucketContent.objects.filter(Prefix="ssbgz"):
     print(obj.key)
 
+try:
+    # Detach IAM policy
+    iam.detach_role_policy(RoleName=dwh_iam_role_name, PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
+except Exception as e:
+    print (e)
 
-dwhRole = iam.create_role(Path='/',
+try:
+    # Delete IAM Role
+    iam.delete_role(RoleName=dwh_iam_role_name)
+except Exception as e:
+    print (e)
+
+try:
+
+    dwhRole = iam.create_role(Path='/',
                           RoleName=dwh_iam_role_name,
                           Description=dwh_iam_role_desc,
                           AssumeRolePolicyDocument=json.dumps(
@@ -47,16 +60,26 @@ dwhRole = iam.create_role(Path='/',
 
                            )
 
-iam.attach_role_policy (RoleName=dwh_iam_role_name,
-                        PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-                        )['ResponseMetaData']['HTTPStatusCode']
+except Exception as e:
+    print (e)
 
-roleArn = iam.get_role(Rolename=dwh_iam_role_name)['Role']['Arn']
+try:
+    iam.attach_role_policy (RoleName=dwh_iam_role_name,
+                        PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+                        )['ResponseMetadata']['HTTPStatusCode']
+
+except Exception as e:
+    print (e)
+
+
+roleArn = iam.get_role(RoleName=dwh_iam_role_name)['Role']['Arn']
 
 print(roleArn)
 
 
-response = redshift.create_cluster (
+try:
+
+    response = redshift.create_cluster (
            #Hardware
            ClusterType=dwh_cluster_type,
            NodeType=dwh_node_type,
@@ -71,6 +94,9 @@ response = redshift.create_cluster (
            #roles
            IamRoles=[roleArn]
            )
+except Exception as e:
+    print (e)
+
 
 
 def prettyRedshift(props):
@@ -79,17 +105,18 @@ def prettyRedshift(props):
     x = [(k,v) for k,v in props.items() if k in keysToShow]
     return pd.DataFrame(data=x,columns=['Key','Value'])
 
-myClusterProps = redshift.describe_cluster(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
+myClusterProps = redshift.describe_clusters(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
 df = prettyRedshift(myClusterProps)
 
-print (df)
+
 
 for i in range(1,1000):
+    print(df)
+    if df.loc[df['Key']=='ClusterStatus','Value'].iloc[0]=='available':
+        break
     time.sleep(10)
-    myClusterProps = redshift.describe_cluster(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
+    myClusterProps = redshift.describe_clusters(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
     df = prettyRedshift(myClusterProps)
-    if df['ClusterStatus']=='available':
-        exit()
 
 dwh_endpoint = myClusterProps['Endpoint']['Address']
 dwh_roleArn = myClusterProps['IamRoles'][0]['IamRoleArn']
@@ -116,15 +143,22 @@ myClusterProps = redshift.describe_clusters(ClusterIdentifier=dwh_cluster_identi
 df = prettyRedshift (myClusterProps)
 for i in range(1,1000):
     try:
-        myClusterProps = redshift.describe_cluster(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
-        df = prettyRedshift(myClusterProps)
-        if df['ClusterStatus']=='deleting':
+        print(df)
+        if df.loc[df['Key'] == 'ClusterStatus', 'Value'].iloc[0] == 'deleting':
             time.sleep(10)
+        myClusterProps = redshift.describe_clusters(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
+        df = prettyRedshift(myClusterProps)
     except Exception as e:
         print("Cluster deleted")
 
-# Detach IAM policy
-iam.detach_role_policy(RoleName=dwh_iam_role_name, PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
+try:
+    # Detach IAM policy
+    iam.detach_role_policy(RoleName=dwh_iam_role_name, PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
+except Exception as e:
+    print (e)
 
-# Delete IAM Role
-iam.delete_role(RoleName=dwh_iam_role_name)
+try:
+    # Delete IAM Role
+    iam.delete_role(RoleName=dwh_iam_role_name)
+except Exception as e:
+    print (e)
