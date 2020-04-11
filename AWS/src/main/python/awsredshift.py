@@ -150,6 +150,7 @@ for i in range(1,1000):
         df = prettyRedshift(myClusterProps)
     except Exception as e:
         print("Cluster deleted")
+        break
 
 try:
     # Detach IAM policy
