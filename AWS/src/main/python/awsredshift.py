@@ -137,6 +137,7 @@ try:
 except Exception as e:
     print(e)
 
+#delete Clsuter
 redshift.delete_cluster( ClusterIdentifier=dwh_cluster_identiier,  SkipFinalClusterSnapshot=True)
 
 myClusterProps = redshift.describe_clusters(ClusterIdentifier=dwh_cluster_identiier)['Clusters'][0]
