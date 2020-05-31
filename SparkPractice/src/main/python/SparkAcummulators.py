@@ -1,0 +1,1 @@
+#Global variables for entire cluster which can be used for debuggin
