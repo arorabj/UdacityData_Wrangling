@@ -7,12 +7,14 @@ from pyspark.sql.types import MapType, StringType
 spark = SparkSession.builder.appName("SchemaOnRead").getOrCreate()
 
 path = "/Users/anantarora/Downloads/DataSets/SparkPracticeUdemy/NASA_access_log_Jul95.gz"
-df_log =spark.read.text(path)
+df_log = spark.read.text(path)
 
 print ( df_log.printSchema())
 print (df_log.count())
-df_log.show(5)
-df_log.show(5,truncate=False)
+print(df_log.show(5))
+print(df_log.show(5,truncate=False))
+
+
 
 # convert to Dataframe
 pd.set_option('max_colwidth', 200)
@@ -21,10 +23,11 @@ print(df_log.limit(5).toPandas())
 df_array = df_log.withColumn("tokenized",split('value'," "))
 print(df_array.limit(5).toPandas())
 
+
 #In Below UDF return type is not define so it will return string
 
 @udf
-def pasreUDF(line):
+def parseUDF(line):
     import re
     PATTERN = '^(\S+) (\S+) (\S+) \[([\w:/]+\s[+\-]\d{4})\] (\S+) (\S+)\s*(\S*)" (\d{3}) (\S+)'
     match = re.search(PATTERN,line)
@@ -46,17 +49,19 @@ def pasreUDF(line):
             "content_size"  : size
             }
 
-df_parsed = df_log.withColumn("parsed",pasreUDF("value"))
+df_parsed = df_log.withColumn("parsed",parseUDF("value"))
+
 print(df_parsed.limit(10).toPandas())
 
-print(df_parsed.prinSchema())
+
+print(df_parsed.printSchema())
 
 
 
 #In Below UDF return type is nis defined
 
 @udf(MapType(StringType(),StringType()))
-def pasreUDFbetter(line):
+def parseUDFbetter(line):
     import re
     PATTERN = '^(\S+) (\S+) (\S+) \[([\w:/]+\s[+\-]\d{4})\] (\S+) (\S+)\s*(\S*)" (\d{3}) (\S+)'
     match = re.search(PATTERN,line)
@@ -78,23 +83,27 @@ def pasreUDFbetter(line):
             "content_size"  : size
             }
 
-df_parsed = df_log.withColumn("parsed",pasreUDFbetter("value"))
+df_parsed = df_log.withColumn("parsed",parseUDFbetter("value"))
 print(df_parsed.limit(10).toPandas())
 
-print(df_parsed.prinSchema())
+print(df_parsed.printSchema())
 
 print (df_parsed.select("parsed").limit(5).toPandas())
 
 # select dict values as column
 print (df_parsed.selectExpr("parsed['host'] as host").limit(5).toPandas())
 
+
 # now doing the above for all columns
 fields = ['host','client_identd','user_id','date_time','method','endpoint','protocol','response_code','content_size']
-exprs = ["parsed ['{}'] as {}'".format(i,i) for i in fields]
+exprs = ["parsed['{}'] as {}".format(i,i) for i in fields]
 print (exprs)
 
+
 df_clean = df_parsed.selectExpr(*exprs)
+
 print(df_clean.limit(10).toPandas())
+
 
 print(df_clean.groupBy("host").count().orderBy(desc("count")).limit(10).toPandas())
 
