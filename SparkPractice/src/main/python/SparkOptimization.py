@@ -35,4 +35,6 @@ print (data.year.value_counts())
 
 spark=SparkSession.builder.appName("Practice1").getOrCreate()
 data = spark.read.csv(path)
+
+# below will repartition the data
 data.repartition(6)
