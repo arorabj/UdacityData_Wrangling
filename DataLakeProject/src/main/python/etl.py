@@ -15,12 +15,13 @@ os.environ['AWS_ACCESS_KEY_ID'] = config.get('AWS','AWS_KEY')
 os.environ['AWS_SECRET_ACCESS_KEY'] = config.get('AWS','AWS_SECRET')
 #hadoop_conf.set("fs.s3a.endpoint", "s3.us-east-2.amazonaws.com")
 #spark.hadoop.fs.s3a.endpoint               s3.us-east-2.amazonaws.com
-
+print (os.environ['AWS_ACCESS_KEY_ID'] )
+print (os.environ['AWS_SECRET_ACCESS_KEY'] )
 def create_spark_session():
     """Create a apache spark session."""
     spark = SparkSession \
         .builder \
-        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.8.0") \
+        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
         .getOrCreate()
 
     return spark
