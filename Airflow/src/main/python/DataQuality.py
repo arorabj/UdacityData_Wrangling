@@ -54,7 +54,7 @@ def check_greater_than_zero(*args, **kwargs):
     #
     if records is None or len(records[0]) < 1:
         raise ValueError(f"Data quality check failed. {table} returned no results")
-
+    
     logging.info(f"Data quality on table {table} check passed with {records[0][0]} records")
 
 
