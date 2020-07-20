@@ -12,7 +12,7 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.python_operator import PythonOperator
 
-from Airflow.src.main.python import sql_statements
+from airflow_practice.src.main.python import sql_statements
 
 
 def load_trip_data_to_redshift(*args, **kwargs):

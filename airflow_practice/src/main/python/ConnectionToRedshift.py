@@ -1,12 +1,12 @@
 import datetime
-import logging
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.contrib.hooks.aws_hook import AwsHook
 
-from Airflow.src.main.python import sql_statements
+from airflow_practice.src.main.python import sql_statements
+
 
 def load_data_to_redshift(*args,**kwargs):
     aws_hook = AwsHook('aws_credentials')

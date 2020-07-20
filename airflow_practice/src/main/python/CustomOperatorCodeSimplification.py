@@ -7,20 +7,16 @@
 #5 - Execute the DAG
 
 import datetime
-import logging
 
 from airflow import DAG
-from airflow.contrib.hooks.aws_hook import AwsHook
-from airflow.hooks.postgres_hook import PostgresHook
 
 from Airflow.plugins.operators import (
     HasRowsOperator,
     PostgresOperator,
-    PythonOperator,
     S3ToRedshiftOperator
 )
 
-from Airflow.src.main.python import sql_statements
+from airflow_practice.src.main.python import sql_statements
 
 #
 # TODO: Replace the data quality checks with the HasRowsOperator
