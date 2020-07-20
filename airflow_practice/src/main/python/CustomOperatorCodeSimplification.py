@@ -7,10 +7,13 @@
 #5 - Execute the DAG
 
 import datetime
+import logging
 
 from airflow import DAG
+from airflow.contrib.hooks.aws_hook import AwsHook
+from airflow.hooks.postgres_hook import PostgresHook
 
-from plugins.operators import (
+from airflow.operators import (
     HasRowsOperator,
     PostgresOperator,
     PythonOperator,
