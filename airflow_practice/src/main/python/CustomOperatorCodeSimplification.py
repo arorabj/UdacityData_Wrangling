@@ -10,9 +10,10 @@ import datetime
 
 from airflow import DAG
 
-from Airflow.plugins.operators import (
+from plugins.operators import (
     HasRowsOperator,
     PostgresOperator,
+    PythonOperator,
     S3ToRedshiftOperator
 )
 
