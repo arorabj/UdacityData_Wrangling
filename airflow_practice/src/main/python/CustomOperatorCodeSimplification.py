@@ -7,7 +7,6 @@
 #5 - Execute the DAG
 
 import datetime
-import logging
 
 from airflow import DAG
 from airflow.contrib.hooks.aws_hook import AwsHook

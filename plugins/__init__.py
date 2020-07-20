@@ -1,6 +1,6 @@
 from airflow.plugins_manager import AirflowPlugin
 
-from plugins import operators
+from airflow import operators
 
 # Defining the plugin class
 class UdacityPlugin(AirflowPlugin):
